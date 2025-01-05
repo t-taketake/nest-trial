@@ -15,6 +15,10 @@ export class AppService {
     return 'Hello World!!';
   }
 
+  getHellow(): string {
+    return 'Hellow!!';
+  }
+
   getDate(): string {
     return new Date().toLocaleDateString('ja-JP');
   }
