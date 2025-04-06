@@ -34,4 +34,11 @@ export class AppService {
       return `データベース接続エラー: ${error.message}`;
     }
   }
+
+  // CodeQLテスト
+  async insecureQuery(userInput: string): Promise<any> {
+    // SQLインジェクションのリスクがあるコード
+    const rawQuery = `SELECT * FROM samoedo WHERE name = '${userInput}'`;
+    return await this.dataSource.query(rawQuery);
+  }
 }
