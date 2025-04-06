@@ -1,4 +1,4 @@
 name: "Custom CodeQL config"
 queries:
-  - paths: ./src
   - uses: ./.github/codeql/custom-queries/novar.ql
+  - paths: ./src
