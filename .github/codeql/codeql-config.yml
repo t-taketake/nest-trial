@@ -1,4 +1,3 @@
 name: "Custom CodeQL config"
 queries:
-  - uses: security-and-quality
   - path: .github/codeql/custom-queries
