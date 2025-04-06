@@ -12,6 +12,7 @@ export class AppService {
   ) {}
 
   getHello(): string {
+    var message = 'Hello World!!';
     return 'Hello World!!';
   }
 
