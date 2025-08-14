@@ -24,10 +24,10 @@ jobs:
             curl -fsL "$url" >> all_feeds.txt || echo "Failed to fetch $url"
           done
       
-          # $GITHUB_OUTPUT に書き込む
           echo "raw_text<<EOF" >> "$GITHUB_OUTPUT"
           cat all_feeds.txt >> "$GITHUB_OUTPUT"
           echo "EOF" >> "$GITHUB_OUTPUT"
+
       - name: Summarize with Gemini
         id: gemini
         uses: google-github-actions/run-gemini-cli@v0
