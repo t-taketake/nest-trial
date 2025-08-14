@@ -16,6 +16,7 @@ jobs:
             "http://rss.itmedia.co.jp/rss/2.0/news_foreign.xml"
             "https://rss.itmedia.co.jp/rss/2.0/news_security.xml"
             "https://rss.itmedia.co.jp/rss/2.0/aiplus.xml"
+            "https://aws.amazon.com/jp/about-aws/whats-new/recent/feed/"
           )
           echo "Fetching RSS feeds..."
           for url in "${FEEDS[@]}"; do
@@ -33,9 +34,11 @@ jobs:
           gemini_api_key: ${{ secrets.GEMINI_API_KEY }}
           model: "gemini-2.5-pro"
           prompt: |
-            あなたは優秀なアシスタントです。
-            以下の複数のRSSフィードの生データ（XML形式）から、発行日時が過去24時間以内の新しい記事のみを抽出してください。
-            その後、抽出した全記事の内容を統合し、最も重要なトピックを3つに絞って、それぞれを箇条書きで簡潔に要約してください。
+            以下の複数のRSSフィードの生データ（xmlやその他）から、発行日時が過去24時間以内の新しい記事のみを抽出してください。
+            その後、抽出した全記事の内容を統合し、最も重要なトピックを洗い出し、それぞれを箇条書きで簡潔に要約してください。
+            重要なトピック：
+            1. ITエンジニアに関わる内容
+            2. AI、クラウド、セキュリティに関連する内容
             要約の最後には、参考にした記事のタイトルとリンクをリスト形式で必ず記載してください。
             ---
             ${{ steps.fetch.outputs.raw_xml }}
