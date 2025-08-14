@@ -43,8 +43,3 @@ jobs:
             ---
             ${{ steps.fetch.outputs.raw_xml }}
             ---
-      - name: Print Summary to Log
-        run: |
-          echo "--- Gemini Summary Result ---"
-          echo "${{ steps.gemini.outputs.prompt_output }}"
-          echo "-----------------------------"
