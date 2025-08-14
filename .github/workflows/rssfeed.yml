@@ -26,11 +26,9 @@ jobs:
             cat all_feeds.xml
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
-
       - name: Summarize with Gemini
         id: gemini
-        uses: google-github-actions/run-gemini-cli@v0
-        # with: ではなく env: でAPIキーを渡すのが正しい仕様
+        uses: google-github-actions/run-gemini-cli
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         with:
@@ -40,11 +38,9 @@ jobs:
             以下の複数のRSSフィードの生データ（XML形式）から、発行日時が過去24時間以内の新しい記事のみを抽出してください。
             その後、抽出した全記事の内容を統合し、最も重要なトピックを3つに絞って、それぞれを箇条書きで簡潔に要約してください。
             要約の最後には、参考にした記事のタイトルとリンクをリスト形式で必ず記載してください。
-
             ---
             ${{ steps.fetch.outputs.raw_xml }}
             ---
-      
       - name: Print Summary to Log
         run: |
           echo "--- Gemini Summary Result ---"
