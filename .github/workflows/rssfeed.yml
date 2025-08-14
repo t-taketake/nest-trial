@@ -43,5 +43,5 @@ jobs:
             2. AI、クラウド、セキュリティに関連する内容
             要約の最後には、参考にした記事のタイトルとリンクをリスト形式で必ず記載してください。
             ---
-            ${{ steps.fetch.outputs.raw_xml }}
+            ${{ steps.fetch.outputs.raw_txt }}
             ---
