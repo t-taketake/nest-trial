@@ -28,7 +28,7 @@ jobs:
           } >> "$GITHUB_OUTPUT"
       - name: Summarize with Gemini
         id: gemini
-        uses: google-github-actions/run-gemini-cli@v0
+        uses: google-github-actions/run-gemini-cli@v1
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         with:
