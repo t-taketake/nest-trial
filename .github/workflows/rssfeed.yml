@@ -11,21 +11,43 @@ jobs:
       - name: Fetch RSS Feeds
         id: fetch
         run: |
-          FEEDS=(
+          # XMLフィード
+          XML_FEEDS=(
             "https://rss.itmedia.co.jp/rss/2.0/news_bursts.xml"
             "http://rss.itmedia.co.jp/rss/2.0/news_foreign.xml"
             "https://rss.itmedia.co.jp/rss/2.0/news_security.xml"
             "https://rss.itmedia.co.jp/rss/2.0/aiplus.xml"
           )
-          echo "Fetching RSS feeds..."
-          for url in "${FEEDS[@]}"; do
+          # 非XMLフィード
+          NON_XML_FEEDS=(
+            "https://aws.amazon.com/jp/about-aws/whats-new/recent/feed/"
+          )
+
+          echo "Fetching XML RSS feeds..."
+          rm -f all_feeds.xml
+          for url in "${XML_FEEDS[@]}"; do
             curl -fsL "$url" >> all_feeds.xml || echo "Failed to fetch $url"
           done
+
+          echo "Fetching non-XML RSS feeds..."
+          rm -f all_feeds_nonxml.txt
+          for url in "${NON_XML_FEEDS[@]}"; do
+            curl -fsL "$url" >> all_feeds_nonxml.txt || echo "Failed to fetch $url"
+          done
+
+          # GitHub Actions outputs
           {
             echo "raw_xml<<EOF"
             cat all_feeds.xml
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
+
+          {
+            echo "raw_nonxml<<EOF"
+            cat all_feeds_nonxml.txt
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
       - name: Summarize with Gemini
         id: gemini
         uses: google-github-actions/run-gemini-cli@v0
@@ -33,12 +55,12 @@ jobs:
           gemini_api_key: ${{ secrets.GEMINI_API_KEY }}
           model: "gemini-2.5-pro"
           prompt: |
-            以下の複数のRSSフィードの生データ（xmlやその他）から、発行日時が過去24時間以内の新しい記事のみを抽出してください。
+            以下の複数のRSSフィードの生データから、発行日時が過去24時間以内の新しい記事のみを抽出してください。
+            XML形式のフィード:
+            ${{ steps.fetch.outputs.raw_xml }}
+
+            非XML形式のフィード:
+            ${{ steps.fetch.outputs.raw_nonxml }}
+
             その後、抽出した全記事の内容を統合し、最も重要なトピックを洗い出し、それぞれを箇条書きで簡潔に要約してください。
             重要なトピック：
-            1. ITエンジニアに関わる内容
-            2. AI、クラウド、セキュリティに関連する内容
-            要約の最後には、参考にした記事のタイトルとリンクをリスト形式で必ず記載してください。
-            ---
-            ${{ steps.fetch.outputs.raw_xml }}
-            ---
