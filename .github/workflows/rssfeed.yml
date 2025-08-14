@@ -16,6 +16,7 @@ jobs:
             "http://rss.itmedia.co.jp/rss/2.0/news_foreign.xml"
             "https://rss.itmedia.co.jp/rss/2.0/news_security.xml"
             "https://rss.itmedia.co.jp/rss/2.0/aiplus.xml"
+            "https://aws.amazon.com/jp/about-aws/whats-new/recent/feed/"
           )
           echo "Fetching RSS feeds..."
           for url in "${FEEDS[@]}"; do
