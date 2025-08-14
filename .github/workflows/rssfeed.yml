@@ -11,22 +11,19 @@ jobs:
       - name: Fetch RSS Feeds
         id: fetch
         run: |
-          rm -f all_feeds.txt
           FEEDS=(
             "https://rss.itmedia.co.jp/rss/2.0/news_bursts.xml"
             "http://rss.itmedia.co.jp/rss/2.0/news_foreign.xml"
             "https://rss.itmedia.co.jp/rss/2.0/news_security.xml"
             "https://rss.itmedia.co.jp/rss/2.0/aiplus.xml"
-            "https://aws.amazon.com/jp/about-aws/whats-new/recent/feed/"
           )
           echo "Fetching RSS feeds..."
           for url in "${FEEDS[@]}"; do
-            curl -fsL "$url" >> all_feeds.txt || echo "Failed to fetch $url"
+            curl -fsL "$url" >> all_feeds.xml || echo "Failed to fetch $url"
           done
-      
           {
-            echo "raw_text<<EOF"
-            cat all_feeds.txt
+            echo "raw_xml<<EOF"
+            cat all_feeds.xml
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
       - name: Summarize with Gemini
@@ -43,5 +40,5 @@ jobs:
             2. AI、クラウド、セキュリティに関連する内容
             要約の最後には、参考にした記事のタイトルとリンクをリスト形式で必ず記載してください。
             ---
-            ${{ steps.fetch.outputs.raw_txt }}
+            ${{ steps.fetch.outputs.raw_xml }}
             ---
