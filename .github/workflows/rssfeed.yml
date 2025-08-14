@@ -11,21 +11,23 @@ jobs:
       - name: Fetch RSS Feeds
         id: fetch
         run: |
+          rm -f all_feeds.txt
           FEEDS=(
             "https://rss.itmedia.co.jp/rss/2.0/news_bursts.xml"
             "http://rss.itmedia.co.jp/rss/2.0/news_foreign.xml"
             "https://rss.itmedia.co.jp/rss/2.0/news_security.xml"
             "https://rss.itmedia.co.jp/rss/2.0/aiplus.xml"
+            "https://aws.amazon.com/jp/about-aws/whats-new/recent/feed/"
           )
-          echo "Fetching RSS feeds..."
+          echo "Fetching RSS/feeds..."
           for url in "${FEEDS[@]}"; do
-            curl -fsL "$url" >> all_feeds.xml || echo "Failed to fetch $url"
+            curl -fsL "$url" >> all_feeds.txt || echo "Failed to fetch $url"
           done
-          {
-            echo "raw_xml<<EOF"
-            cat all_feeds.xml
-            echo "EOF"
-          } >> "$GITHUB_OUTPUT"
+      
+          # $GITHUB_OUTPUT に書き込む
+          echo "raw_text<<EOF" >> "$GITHUB_OUTPUT"
+          cat all_feeds.txt >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
       - name: Summarize with Gemini
         id: gemini
         uses: google-github-actions/run-gemini-cli@v0
