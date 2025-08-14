@@ -1,0 +1,56 @@
+name: RSS Summary to Log
+
+on:
+  workflow_dispatch: # 手動実行を許可
+
+jobs:
+  rss_to_log:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Fetch RSS Feeds
+        id: fetch
+        run: |
+          # ここにフィードURLを追加・編集してください
+          FEEDS=(
+            "https://rss.itmedia.co.jp/rss/2.0/news_bursts.xml"
+            "http://rss.itmedia.co.jp/rss/2.0/news_foreign.xml"
+            "https://rss.itmedia.co.jp/rss/2.0/news_security.xml"
+            "https://rss.itmedia.co.jp/rss/2.0/aiplus.xml"
+          )
+
+          # 全てのフィード内容を結合してファイルに保存
+          echo "Fetching RSS feeds..."
+          for url in "${FEEDS[@]}"; do
+            # -f: エラー時にサイレントに失敗, -s: サイレントモード, -L: リダイレクトを追う
+            curl -fsL "$url" >> all_feeds.xml || echo "Failed to fetch $url"
+          done
+
+          # 結合したXMLを次のステップに渡す
+          {
+            echo "raw_xml<<EOF"
+            cat all_feeds.xml
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Summarize with Gemini
+        id: gemini
+        uses: google-github-actions/run-gemini-cli@v1
+        with:
+          model: "gemini-2.5-pro"
+          api-key: ${{ secrets.GEMINI_API_KEY }}
+          prompt: |
+            あなたは優秀なアシスタントです。
+            以下の複数のRSSフィードの生データ（XML形式）から、発行日時が過去24時間以内の新しい記事のみを抽出してください。
+            その後、抽出した全記事の内容を統合し、重要なトピックを洗い出し、それぞれを箇条書きで簡潔に要約してください。
+            要約の最後には、参考にした記事のタイトルとリンクをリスト形式で必ず記載してください。
+
+            ---
+            ${{ steps.fetch.outputs.raw_xml }}
+            ---
+      
+      - name: Print Summary to Log
+        run: |
+          echo "--- Gemini Summary Result ---"
+          echo "${{ steps.gemini.outputs.result }}"
+          echo "-----------------------------"
