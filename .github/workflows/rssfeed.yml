@@ -17,6 +17,7 @@ jobs:
             "https://rss.itmedia.co.jp/rss/2.0/news_security.xml"
             "https://rss.itmedia.co.jp/rss/2.0/aiplus.xml"
             "https://aws.amazon.com/jp/about-aws/whats-new/recent/feed/"
+            "https://research.google/blog/rss/"
           )
           echo "Fetching RSS feeds..."
           rm -f all_feeds.xml
@@ -32,12 +33,11 @@ jobs:
           model: "gemini-2.5-pro"
           prompt: |
             以下のRSSフィードの内容（XMLやその他）から、
-            発行日時が過去24時間以内の記事のみ抽出し、
+            発行日時が前日の記事のみ抽出し、
             重要なトピックを要約してください。
 
             重要なトピック：
-            1. ITエンジニア関連
-            2. AI、クラウド、セキュリティ関連
+            AI、クラウド、セキュリティ関連
 
             要約の最後に記事タイトルとリンクを列挙してください。
             ---
