@@ -36,11 +36,3 @@ jobs:
             ---
             ${{ steps.readfile.outputs.content }}
             ---
-
-      - name: Read XML into output
-        id: readfile
-        run: |
-          CONTENT=$(cat all_feeds.xml)
-          echo "content<<EOF" >> $GITHUB_OUTPUT
-          echo "$CONTENT" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
