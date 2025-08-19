@@ -8,24 +8,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Fetch RSS Feeds
-        id: fetch
-        run: |
-          FEEDS=(
-            "https://rss.itmedia.co.jp/rss/2.0/news_bursts.xml"
-            "http://rss.itmedia.co.jp/rss/2.0/news_foreign.xml"
-            "https://rss.itmedia.co.jp/rss/2.0/news_security.xml"
-            "https://rss.itmedia.co.jp/rss/2.0/aiplus.xml"
-            "https://aws.amazon.com/jp/about-aws/whats-new/recent/feed/"
-            "https://research.google/blog/rss/"
-            "https://www.businessinsider.jp/techinsider/"
-          )
-          echo "Fetching RSS feeds..."
-          rm -f all_feeds.xml
-          for url in "${FEEDS[@]}"; do
-            curl -fsL "$url" >> all_feeds.xml || echo "Failed to fetch $url"
-          done
-
       - name: Summarize with Gemini
         id: gemini
         uses: google-github-actions/run-gemini-cli@v0
@@ -33,18 +15,23 @@ jobs:
           gemini_api_key: ${{ secrets.GEMINI_API_KEY }}
           model: "gemini-2.5-pro"
           prompt: |
-            以下のRSSフィードの内容（XMLやその他）から、
-            発行日時が本日の記事のみ抽出し、
+            以下の情報サイトから、発行日時が本日の記事のみ抽出し、
             重要なトピックを要約し、英語は日本語に翻訳してください。
-            ※本日日付以外のものは拾わなくて良いです。（本日日付では無いものも混ざってたりしていました。）
-            ※リンク先が404の場合は載せないで下さい。404かどうかも確かめて下さい。
-
+            ・本日日付以外のものは拾わなくて良いです。（本日日付では無いものも混ざってたりしていました。）
+            ・リンク先が404の場合は載せないで下さい。404かどうかも確かめて下さい。
             ・公開日時を書く事。
             ・記事のソース元の存在確認とソース元のリンクを載せる事。
             ・記事の中身を簡単に要約し、その要約した直後にリンクを付けてください。
             ・重要なトピック：AI、クラウド、セキュリティ関連
             ・RSSフィードに無いが、重要トピックに関する情報が他サイトに存在する場合、そのリンクも載せて欲しい（無い場合は無理に書かなくて良い。）
-            ・参照リンクが404の場合は載せないでください。
+            
+            "https://rss.itmedia.co.jp/rss/2.0/news_bursts.xml"
+            "http://rss.itmedia.co.jp/rss/2.0/news_foreign.xml"
+            "https://rss.itmedia.co.jp/rss/2.0/news_security.xml"
+            "https://rss.itmedia.co.jp/rss/2.0/aiplus.xml"
+            "https://aws.amazon.com/jp/about-aws/whats-new/recent/feed/"
+            "https://research.google/blog/rss/"
+            "https://www.businessinsider.jp/techinsider/"
 
             ---
             ${{ steps.readfile.outputs.content }}
